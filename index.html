@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos Interactivos para Aprender Inglés</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #4169e1;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .games-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .game-tab {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6495ed;
+            color: white;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .game-tab.active {
+            background-color: #4169e1;
+            font-weight: bold;
+        }
+        .game-content {
+            background-color: white;
+            border-radius: 0 5px 5px 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            min-height: 400px;
+            display: none;
+        }
+        .game-content.active {
+            display: block;
+        }
+        .btn {
+            background-color: #4169e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background-color: #3a5fcd;
+        }
+        .score {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .word-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .word {
+            padding: 5px 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .word-guess {
+            background-color: #f0f8ff;
+            border: 1px dashed #6495ed;
+            border-radius: 5px;
+            min-height: 100px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .sentence {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .option {
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #d0e1f9;
+        }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .memory-card {
+            background-color: #4169e1;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .memory-card.flipped {
+            background-color: white;
+            border: 2px solid #4169e1;
+            color: #333;
+            transform: rotateY(180deg);
+        }
+        .memory-card.matched {
+            background-color: #d4edda;
+            border: 2px solid #155724;
+            color: #155724;
+            cursor: not-allowed;
+        }
+        .hangman-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hangman-word {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .hangman-letter {
+            width: 30px;
+            height: 40px;
+            border-bottom: 2px solid #333;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .alphabet {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .letter {
+            width: 30px;
+            height: 30px;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .letter:hover {
+            background-color: #d0e1f9;
+        }
+        .letter.used {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+        .hangman-drawing {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .hangman-part {
+            position: absolute;
+            background-color: #333;
+        }
+        #hangman-base {
+            width: 100px;
+            height: 5px;
+            bottom: 0;
+            left: 50px;
+        }
+        #hangman-stand {
+            width: 5px;
+            height: 175px;
+            bottom: 0;
+            left: 50px;
+        }
+        #hangman-top {
+            width: 75px;
+            height: 5px;
+            top: 20px;
+            left: 50px;
+        }
+        #hangman-rope {
+            width: 5px;
+            height: 20px;
+            top: 20px;
+            left: 120px;
+        }
+        #hangman-head {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 5px solid #333;
+            background-color: transparent;
+            top: 40px;
+            left: 105px;
+            display: none;
+        }
+        #hangman-body {
+            width: 5px;
+            height: 50px;
+            top: 75px;
+            left: 120px;
+            display: none;
+        }
+        #hangman-arm-left {
+            width: 40px;
+            height: 5px;
+            transform: rotate(45deg);
+            top: 85px;
+            left: 90px;
+            display: none;
+        }
+        #hangman-arm-right {
+            width: 40px;
+            height: 5px;
+            transform: rotate(-45deg);
+            top: 85px;
+            left: 115px;
+            display: none;
+        }
+        #hangman-leg-left {
+            width: 40px;
+            height: 5px;
+            transform: rotate(45deg);
+            top: 120px;
+            left: 90px;
+            display: none;
+        }
+        #hangman-leg-right {
+            width: 40px;
+            height: 5px;
+            transform: rotate(-45deg);
+            top: 120px;
+            left: 115px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Juegos Interactivos para Aprender Inglés</h1>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <h2>¡Aprende inglés jugando!</h2>
+            <p>Selecciona uno de los juegos interactivos para practicar y mejorar tu inglés de manera divertida.</p>
+        </div>
+
+        <div>
+            <div class="game-tab active" onclick="changeGame(event, 'word-order')">Orden de Palabras</div>
+            <div class="game-tab" onclick="changeGame(event, 'vocabulary-quiz')">Quiz de Vocabulario</div>
+            <div class="game-tab" onclick="changeGame(event, 'memory-game')">Juego de Memoria</div>
+            <div class="game-tab" onclick="changeGame(event, 'hangman')">Ahorcado</div>
+        </div>
+
+        <!-- Juego 1: Ordenar Palabras -->
+        <div id="word-order" class="game-content active">
+            <h3>Orden de Palabras</h3>
+            <p>Arrastra las palabras para formar una frase correcta en inglés.</p>
+            
+            <div class="word-guess" id="word-guess"></div>
+            
+            <div class="word-container" id="word-container"></div>
+            
+            <button class="btn" onclick="checkWordOrder()">Comprobar</button>
+            <button class="btn" onclick="resetWordOrder()">Reiniciar</button>
+            
+            <div class="score" id="word-order-score">Puntuación: 0</div>
+            <div class="feedback" id="word-order-feedback"></div>
+        </div>
+
+        <!-- Juego 2: Quiz de Vocabulario -->
+        <div id="vocabulary-quiz" class="game-content">
+            <h3>Quiz de Vocabulario</h3>
+            <p>Elige la traducción correcta para cada palabra o frase.</p>
+            
+            <div class="sentence" id="quiz-question"></div>
+            
+            <div class="options" id="quiz-options"></div>
+            
+            <button class="btn" onclick="nextVocabQuestion()">Siguiente Pregunta</button>
+            
+            <div class="score" id="vocab-score">Puntuación: 0</div>
+            <div class="feedback" id="vocab-feedback"></div>
+        </div>
+
+        <!-- Juego 3: Juego de Memoria -->
+        <div id="memory-game" class="game-content">
+            <h3>Juego de Memoria</h3>
+            <p>Encuentra los pares de palabras en inglés y su traducción al español.</p>
+            
+            <div class="memory-grid" id="memory-grid"></div>
+            
+            <button class="btn" onclick="resetMemoryGame()">Nuevo Juego</button>
+            
+            <div class="score" id="memory-score">Pares encontrados: 0</div>
+        </div>
+
+        <!-- Juego 4: Ahorcado -->
+        <div id="hangman" class="game-content">
+            <h3>Ahorcado</h3>
+            <p>Adivina la palabra en inglés antes de que se complete el dibujo.</p>
+            
+            <div class="hangman-container">
+                <div class="hangman-drawing">
+                    <div class="hangman-part" id="hangman-base"></div>
+                    <div class="hangman-part" id="hangman-stand"></div>
+                    <div class="hangman-part" id="hangman-top"></div>
+                    <div class="hangman-part" id="hangman-rope"></div>
+                    <div class="hangman-part" id="hangman-head"></div>
+                    <div class="hangman-part" id="hangman-body"></div>
+                    <div class="hangman-part" id="hangman-arm-left"></div>
+                    <div class="hangman-part" id="hangman-arm-right"></div>
+                    <div class="hangman-part" id="hangman-leg-left"></div>
+                    <div class="hangman-part" id="hangman-leg-right"></div>
+                </div>
+                <div class="hangman-hint" id="hangman-hint"></div>
+                <div class="hangman-word" id="hangman-word"></div>
+                <div class="alphabet" id="alphabet"></div>
+                <button class="btn" onclick="resetHangman()">Nueva Palabra</button>
+                <div class="score" id="hangman-score">Palabras adivinadas: 0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos para los juegos
+        const sentences = [
+            { sentence: "I love to learn English", words: ["I", "love", "to", "learn", "English"] },
+            { sentence: "The cat is on the table", words: ["The", "cat", "is", "on", "the", "table"] },
+            { sentence: "She likes playing soccer", words: ["She", "likes", "playing", "soccer"] },
+            { sentence: "We went to the movies yesterday", words: ["We", "went", "to", "the", "movies", "yesterday"] },
+            { sentence: "Can you help me please", words: ["Can", "you", "help", "me", "please"] }
+        ];
+
+        const vocabQuestions = [
+            {
+                question: "¿Cómo se dice 'casa' en inglés?",
+                options: ["House", "Car", "Dog", "Book"],
+                answer: "House"
+            },
+            {
+                question: "¿Cómo se dice 'buenos días' en inglés?",
+                options: ["Good night", "Good afternoon", "Good morning", "Hello"],
+                answer: "Good morning"
+            },
+            {
+                question: "¿Cómo se traduce 'I am hungry'?",
+                options: ["Estoy cansado", "Tengo sueño", "Tengo hambre", "Estoy enfermo"],
+                answer: "Tengo hambre"
+            },
+            {
+                question: "¿Qué significa 'teacher'?",
+                options: ["Estudiante", "Profesor", "Doctor", "Ingeniero"],
+                answer: "Profesor"
+            },
+            {
+                question: "¿Cómo se dice 'perro' en inglés?",
+                options: ["Cat", "Bird", "Fish", "Dog"],
+                answer: "Dog"
+            }
+        ];
+
+        const memoryPairs = [
+            { english: "Dog", spanish: "Perro" },
+            { english: "Cat", spanish: "Gato" },
+            { english: "House", spanish: "Casa" },
+            { english: "Water", spanish: "Agua" },
+            { english: "Sun", spanish: "Sol" },
+            { english: "Moon", spanish: "Luna" },
+            { english: "Book", spanish: "Libro" },
+            { english: "Friend", spanish: "Amigo" }
+        ];
+
+        const hangmanWords = [
+            { word: "HELLO", hint: "Un saludo común" },
+            { word: "APPLE", hint: "Una fruta roja o verde" },
+            { word: "HOUSE", hint: "Donde vives" },
+            { word: "SCHOOL", hint: "Lugar donde estudias" },
+            { word: "BEACH", hint: "Lugar con arena y mar" },
+            { word: "WATER", hint: "Bebida esencial" },
+            { word: "FRIEND", hint: "Persona cercana a ti" },
+            { word: "FAMILY", hint: "Grupo de personas relacionadas" }
+        ];
+
+        // Variables globales
+        let currentSentence = 0;
+        let wordOrderScore = 0;
+        let vocabScore = 0;
+        let currentQuestion = 0;
+        let memoryScore = 0;
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let memoryCards = [];
+        let hangmanScore = 0;
+        let currentWord = "";
+        let currentHint = "";
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+
+        // Funciones generales
+        function changeGame(event, gameName) {
+            // Ocultar todos los juegos
+            const gameContents = document.querySelectorAll('.game-content');
+            gameContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Quitar clase active de todas las pestañas
+            const gameTabs = document.querySelectorAll('.game-tab');
+            gameTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar el juego seleccionado
+            document.getElementById(gameName).classList.add('active');
+            
+            // Activar la pestaña seleccionada
+            event.currentTarget.classList.add('active');
+        }
+
+        // Juego 1: Orden de Palabras
+        function initWordOrder() {
+            const sentence = sentences[currentSentence];
+            const wordContainer = document.getElementById('word-container');
+            const wordGuess = document.getElementById('word-guess');
+            
+            // Limpiar contenedores
+            wordContainer.innerHTML = '';
+            wordGuess.innerHTML = '';
+            
+            // Mezclar palabras
+            const shuffledWords = [...sentence.words].sort(() => Math.random() - 0.5);
+            
+            // Crear elementos para las palabras
+            shuffledWords.forEach(word => {
+                const wordElement = document.createElement('div');
+                wordElement.classList.add('word');
+                wordElement.textContent = word;
+                wordElement.draggable = true;
+                wordElement.addEventListener('dragstart', dragStart);
+                wordContainer.appendChild(wordElement);
+            });
+
+            // Configurar área para colocar palabras
+            wordGuess.addEventListener('dragover', dragOver);
+            wordGuess.addEventListener('drop', drop);
+        }
+
+        function dragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.textContent);
+            event.target.classList.add('dragging');
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData('text/plain');
+            const draggingElement = document.querySelector('.dragging');
+            
+            // Crear nuevo elemento para la palabra en el área de respuesta
+            const wordElement = document.createElement('div');
+            wordElement.classList.add('word');
+            wordElement.textContent = data;
+            wordElement.addEventListener('click', () => {
+                // Devolver palabra al contenedor original al hacer clic
+                const wordContainer = document.getElementById('word-container');
+                wordContainer.appendChild(wordElement);
+            });
+            
+            event.target.appendChild(wordElement);
+            
+            // Eliminar la palabra original
+            if (draggingElement) {
+                draggingElement.classList.remove('dragging');
+                draggingElement.remove();
+            }
+        }
+
+        function checkWordOrder() {
+            const wordGuess = document.getElementById('word-guess');
+            const feedback = document.getElementById('word-order-feedback');
+            const scoreElement = document.getElementById('word-order-score');
+            
+            // Obtener las palabras ordenadas por el usuario
+            const userWords = Array.from(wordGuess.querySelectorAll('.word')).map(word => word.textContent);
+            const correctWords = sentences[currentSentence].words;
+            
+            // Comparar
+            let isCorrect = true;
+            if (userWords.length !== correctWords.length) {
+                isCorrect = false;
+            } else {
+                for (let i = 0; i < userWords.length; i++) {
+                    if (userWords[i] !== correctWords[i]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+            }
+            
+            // Mostrar retroalimentación
+            if (isCorrect) {
+                feedback.textContent = "¡Correcto! La frase está bien ordenada.";
+                feedback.className = "feedback correct";
+                wordOrderScore++;
+                scoreElement.textContent = `Puntuación: ${wordOrderScore}`;
+                
+                // Avanzar a la siguiente frase
+                currentSentence = (currentSentence + 1) % sentences.length;
+                setTimeout(() => {
+                    feedback.textContent = "";
+                    feedback.className = "feedback";
+                    initWordOrder();
+                }, 1500);
+            } else {
+                feedback.textContent = "Incorrecto. Inténtalo de nuevo.";
+                feedback.className = "feedback incorrect";
+            }
+        }
+
+        function resetWordOrder() {
+            initWordOrder();
+            const feedback = document.getElementById('word-order-feedback');
+            feedback.textContent = "";
+            feedback.className = "feedback";
+        }
+
+        // Juego 2: Quiz de Vocabulario
+        function initVocabQuiz() {
+            const question = vocabQuestions[currentQuestion];
+            const questionElement = document.getElementById('quiz-question');
+            const optionsElement = document.getElementById('quiz-options');
+            
+            questionElement.textContent = question.question;
+            optionsElement.innerHTML = '';
+            
+            // Crear opciones mezcladas
+            const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+            
+            shuffledOptions.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.addEventListener('click', () => checkVocabAnswer(option));
+                optionsElement.appendChild(optionElement);
+            });
+        }
+
+        function checkVocabAnswer(selectedOption) {
+            const feedback = document.getElementById('vocab-feedback');
+            const scoreElement = document.getElementById('vocab-score');
+            const correctAnswer = vocabQuestions[currentQuestion].answer;
+            
+            if (selectedOption === correctAnswer) {
+                feedback.textContent = "¡Correcto!";
+                feedback.className = "feedback correct";
+                vocabScore++;
+                scoreElement.textContent = `Puntuación: ${vocabScore}`;
+            } else {
+                feedback.textContent = `Incorrecto. La respuesta correcta es: ${correctAnswer}`;
+                feedback.className = "feedback incorrect";
+            }
+            
+            // Deshabilitar opciones después de responder
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+                if (option.textContent === correctAnswer) {
+                    option.style.backgroundColor = '#d4edda';
+                } else if (option.textContent === selectedOption && selectedOption !== correctAnswer) {
+                    option.style.backgroundColor = '#f8d7da';
+                }
+            });
+        }
+
+        function nextVocabQuestion() {
+            currentQuestion = (currentQuestion + 1) % vocabQuestions.length;
+            initVocabQuiz();
+            const feedback = document.getElementById('vocab-feedback');
+            feedback.textContent = "";
+            feedback.className = "feedback";
+        }
+
+        // Juego 3: Juego de Memoria
+        function initMemoryGame() {
+            const memoryGrid = document.getElementById('memory-grid');
+            memoryGrid.innerHTML = '';
+            matchedPairs = 0;
+            
+            // Crear pares de cartas
+            memoryCards = [];
+            memoryPairs.forEach(pair => {
+                memoryCards.push({ text: pair.english, type: 'english', matched: false });
+                memoryCards.push({ text: pair.spanish, type: 'spanish', matched: false });
+            });
+            
+            // Mezclar cartas
+            memoryCards.sort(() => Math.random() - 0.5);
+            
+            // Crear elementos para las cartas
+            memoryCards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.index = index;
+                cardElement.addEventListener('click', () => flipCard(index));
+                memoryGrid.appendChild(cardElement);
+            });
+            
+            flippedCards = [];
+            document.getElementById('memory-score').textContent = `Pares encontrados: 0`;
+        }
+
+        function flipCard(index) {
+            // Evitar voltear cartas ya emparejadas o ya volteadas
+            if (memoryCards[index].matched || flippedCards.includes(index) || flippedCards.length >= 2) {
+                return;
+            }
+            
+            // Voltear la carta
+            const cardElement = document.querySelector(`.memory-card[data-index="${index}"]`);
+            cardElement.classList.add('flipped');
+            cardElement.textContent = memoryCards[index].text;
+            flippedCards.push(index);
+            
+            // Comprobar si hay dos cartas volteadas
+            if (flippedCards.length === 2) {
+                const [index1, index2] = flippedCards;
+                const card1 = memoryCards[index1];
+                const card2 = memoryCards[index2];
+                
+                // Encontrar el par correspondiente
+                let isMatch = false;
+                for (const pair of memoryPairs) {
+                    if ((card1.text === pair.english && card2.text === pair.spanish) ||
+                        (card1.text === pair.spanish && card2.text === pair.english)) {
+                        isMatch = true;
+                        break;
+                    }
+                }
+                
+                if (isMatch) {
+                    // Marcar como emparejadas
+                    setTimeout(() => {
+                        const cardElement1 = document.querySelector(`.memory-card[data-index="${index1}"]`);
+                        const cardElement2 = document.querySelector(`.memory-card[data-index="${index2}"]`);
+                        cardElement1.classList.add('matched');
+                        cardElement2.classList.add('matched');
+                        memoryCards[index1].matched = true;
+                        memoryCards[index2].matched = true;
+                        matchedPairs++;
+                        document.getElementById('memory-score').textContent = `Pares encontrados: ${matchedPairs}`;
+                        flippedCards = [];
+                        
+                        // Comprobar si se han encontrado todos los pares
+                        if (matchedPairs === memoryPairs.length) {
+                            alert('¡Felicidades! Has encontrado todos los pares.');
+                            memoryScore++;
+                        }
+                    }, 1000);
+                } else {
+                    // Volver a ocultar las cartas
+                    setTimeout(() => {
+                        const cardElement1 = document.querySelector(`.memory-card[data-index="${index1}"]`);
+                        const cardElement2 = document.querySelector(`.memory-card[data-index="${index2}"]`);
+                        cardElement1.classList.remove('flipped');
+                        cardElement2.classList.remove('flipped');
+                        cardElement1.textContent = '';
+                        cardElement2.textContent = '';
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        function resetMemoryGame() {
+            initMemoryGame();
+        }
+
+        // Juego 4: Ahorcado
+        function initHangman() {
+            // Seleccionar una palabra aleatoria
+            const randomIndex = Math.floor(Math.random() * hangmanWords.length);
+            currentWord = hangmanWords[randomIndex].word;
+            currentHint = hangmanWords[randomIndex].hint;
+            
+            // Restablecer variables
+            guessedLetters = [];
+            wrongGuesses = 0;
+            
+            // Mostrar pista
+            document.getElementById('hangman-hint').textContent = `Pista: ${currentHint}`;
+            
+            // Configurar el espacio para la palabra
+            updateHangmanWord();
+            
+            // Crear el alfabeto
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const alphabetContainer = document.getElementById('alphabet');
+            alphabetContainer.innerHTML = '';
+            
+            for (const letter of alphabet) {
+                const letterElement = document.createElement('div');
+                letterElement.classList.add('letter');
+                letterElement.textContent = letter;
+                letterElement.addEventListener('click', () => guessLetter(letter));
+                alphabetContainer.appendChild(letterElement);
+            }
+            
+            // Ocultar partes del ahorcado
+            document.querySelectorAll('.hangman-part').forEach(part => {
+                if (part.id !== 'hangman-base' && part.id !== 'hangman-stand' && 
+                    part.id !== 'hangman-top' && part.id !== 'hangman-rope') {
+                    part.style.display = 'none';
+                }
+            });
+        }
+
+        function updateHangmanWord() {
+            const wordContainer = document.getElementById('hangman-word');
+            wordContainer.innerHTML = '';
+            
+            for (const letter of currentWord) {
+                const letterElement = document.createElement('div');
+                letterElement.classList.add('hangman-letter');
+                
+                if (guessedLetters.includes(letter)) {
+                    letterElement.textContent = letter;
+                }
+                
+                wordContainer.appendChild(letterElement);
+            }
+        }
+
+        function guessLetter(letter) {
+            // Evitar letras ya adivinadas
+            if (guessedLetters.includes(letter)) {
+                return;
+            }
+            
+            // Agregar a letras adivinadas
+            guessedLetters.push(letter);
+            
+            // Marcar botón como usado
+            const letterElement = document.querySelector(`.letter:not(.used):nth-child(${letter.charCodeAt(0) - 64})`);
+            if (letterElement) {
+                letterElement.classList.add('used');
+            }
+            
+            // Comprobar si la letra está en la palabra
+            if (currentWord.includes(letter)) {
+                updateHangmanWord();
+                
+                // Comprobar si se ha ganado
+                const win = [...currentWord].every(char => guessedLetters.includes(char));
+                
+                if (win) {
+                    setTimeout(() => {
+                        alert('¡Felicidades! Has adivinado la palabra.');
+                        hangmanScore++;
+                        document.getElementById('hangman-score').textContent = `Palabras adivinadas: ${hangmanScore}`;
+                        resetHangman();
+                    }, 500);
+                }
+            } else {
+                // Letra incorrecta
+                wrongGuesses++;
+                
+                // Mostrar parte del ahorcado
+                const hangmanParts = [
+                    'hangman-head',
+                    'hangman-body',
+                    'hangman-arm-left',
+                    'hangman-arm-right',
+                    'hangman-leg-left',
+                    'hangman-leg-right'
+                ];
+                
+                if (wrongGuesses <= hangmanParts.length) {
+                    document.getElementById(hangmanParts[wrongGuesses - 1]).style.display = 'block';
+                }
+                
+                // Comprobar si se ha perdido
+                if (wrongGuesses >= hangmanParts.length) {
+                    setTimeout(() => {
+                        alert(`¡Oh no! Has perdido. La palabra era: ${currentWord}`);
+                        resetHangman();
+                    }, 500);
+                }
+            }
+        }
+
+        function resetHangman() {
+            initHangman();
+        }
+
+        // Inicializar todos los juegos al cargar
+        window.onload = function() {
+            initWordOrder();
+            initVocabQuiz();
+            initMemoryGame();
+            initHangman();
+        };
+    </script>
+</body>
+</html>
